@@ -80,43 +80,55 @@ namespace Sharpness
 
     public class Input
     {
-        internal readonly Dictionary<System.Windows.Forms.Keys, bool> Keystate = new Dictionary<System.Windows.Forms.Keys, bool>();
-        internal readonly List<System.Windows.Forms.Keys> KeydownFrame = new List<System.Windows.Forms.Keys>();
-        internal readonly List<System.Windows.Forms.Keys> KeyupFrame = new List<System.Windows.Forms.Keys>();
+        internal readonly Dictionary<System.Windows.Forms.Keys, int> Keystate = new Dictionary<System.Windows.Forms.Keys, int>();
 
         public Input()
         {
             foreach (var key in Enum.GetValues(typeof(System.Windows.Forms.Keys)))
             {
-                this.Keystate[(System.Windows.Forms.Keys)key] = false;
+                this.Keystate[(System.Windows.Forms.Keys)key] = -1;
             }
         }
 
-        public void Clear()
-        {
-            KeyupFrame.Clear();
-            KeydownFrame.Clear();
-        }
-
-        public bool IsKeyReleased(Keys key)
-        {
-            return KeyupFrame.Contains((System.Windows.Forms.Keys)key);
-        }
-
-        public bool IsKeyPressed(Keys key)
-        {
-            var k = (System.Windows.Forms.Keys)key;
-            return KeydownFrame.Contains(k);
-        }
-
-        public bool IsKeyDown(Keys key)
+        public int Get(Keys key)
         {
             return Keystate[(System.Windows.Forms.Keys)key];
         }
 
+        public bool IsKeyReleased(Keys key)
+        {
+            return this.Keystate[(System.Windows.Forms.Keys)key] == 0;
+        }
+
+        public bool IsKeyPressed(Keys key)
+        {
+            return this.Keystate[(System.Windows.Forms.Keys)key] == 1;
+        }
+
+        public bool IsKeyDown(Keys key)
+        {
+            return Keystate[(System.Windows.Forms.Keys)key] > 0;
+        }
+
         public bool IsKeyUp(Keys key)
         {
-            return !Keystate[(System.Windows.Forms.Keys)key];
+            return Keystate[(System.Windows.Forms.Keys)key] < 1;
+        }
+
+        public void Update()
+        {
+            foreach (var key in Enum.GetValues(typeof(System.Windows.Forms.Keys)))
+            {
+                switch (Keystate[(System.Windows.Forms.Keys)key])
+                {
+                    case 1:
+                        Keystate[(System.Windows.Forms.Keys)key] = 2;
+                        break;
+                    case 0:
+                        Keystate[(System.Windows.Forms.Keys)key] = -1;
+                        break;
+                }
+            }
         }
     }
 
@@ -281,21 +293,27 @@ namespace Sharpness
 
         private void SharpnessWindow_KeyUp(object sender, KeyEventArgs e)
         {
-            this.input.KeyupFrame.Add(e.KeyCode);
-            this.input.Keystate[e.KeyCode] = false;
+            var k = this.input.Keystate[e.KeyCode];
+            if (k > 0)
+                this.input.Keystate[e.KeyCode] = 0;
+            else if (k == 0)
+                this.input.Keystate[e.KeyCode] = -1;
         }
 
         private void SharpnessWindow_KeyDown(object sender, KeyEventArgs e)
         {
-            this.input.KeydownFrame.Add(e.KeyCode);
-            this.input.Keystate[e.KeyCode] = true;
+            var k = this.input.Keystate[e.KeyCode];
+            if (k < 1)
+                this.input.Keystate[e.KeyCode] = 1;
+            else if (k == 1)
+                this.input.Keystate[e.KeyCode] = 2;
         }
 
         private void SharpnessWindow_Paint(object sender, PaintEventArgs e)
         {
             canvas.Invalidate(e.Graphics, lastFPS);
-            input.Clear();
             this.gameImpl.Update(input);
+            input.Update();
             this.gameImpl.Draw(canvas);
         }
 
