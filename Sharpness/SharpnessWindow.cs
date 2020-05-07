@@ -81,6 +81,8 @@ namespace Sharpness
     public class Input
     {
         internal readonly Dictionary<System.Windows.Forms.Keys, bool> Keystate = new Dictionary<System.Windows.Forms.Keys, bool>();
+        internal readonly List<System.Windows.Forms.Keys> KeydownFrame = new List<System.Windows.Forms.Keys>();
+        internal readonly List<System.Windows.Forms.Keys> KeyupFrame = new List<System.Windows.Forms.Keys>();
 
         public Input()
         {
@@ -88,6 +90,22 @@ namespace Sharpness
             {
                 this.Keystate[(System.Windows.Forms.Keys)key] = false;
             }
+        }
+
+        public void Clear()
+        {
+            KeyupFrame.Clear();
+            KeydownFrame.Clear();
+        }
+
+        public bool IsKeyReleased(Keys key)
+        {
+            return KeyupFrame.Contains((System.Windows.Forms.Keys)key);
+        }
+
+        public bool IsKeyPressed(Keys key)
+        {
+            return KeydownFrame.Contains((System.Windows.Forms.Keys)key);
         }
 
         public bool IsKeyDown(Keys key)
@@ -262,17 +280,20 @@ namespace Sharpness
 
         private void SharpnessWindow_KeyUp(object sender, KeyEventArgs e)
         {
+            this.input.KeyupFrame.Add(e.KeyCode);
             this.input.Keystate[e.KeyCode] = false;
         }
 
         private void SharpnessWindow_KeyDown(object sender, KeyEventArgs e)
         {
+            this.input.KeydownFrame.Add(e.KeyCode);
             this.input.Keystate[e.KeyCode] = true;
         }
 
         private void SharpnessWindow_Paint(object sender, PaintEventArgs e)
         {
             canvas.Invalidate(e.Graphics, lastFPS);
+            input.Clear();
             this.gameImpl.Update(input);
             this.gameImpl.Draw(canvas);
         }
