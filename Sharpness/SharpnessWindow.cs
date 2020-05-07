@@ -106,7 +106,7 @@ namespace Sharpness
         public bool IsKeyPressed(Keys key)
         {
             var k = (System.Windows.Forms.Keys)key;
-            return !Keystate[k] && KeydownFrame.Contains(k);
+            return KeydownFrame.Contains(k);
         }
 
         public bool IsKeyDown(Keys key)
