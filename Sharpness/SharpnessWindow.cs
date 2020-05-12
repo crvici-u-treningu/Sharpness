@@ -156,6 +156,7 @@ namespace Sharpness
             this.Brushes[Color.Magenta] = new SolidBrush(System.Drawing.Color.Magenta);
             this.Brushes[Color.Purple] = new SolidBrush(System.Drawing.Color.Purple);
             this.Brushes[Color.Pink] = new SolidBrush(System.Drawing.Color.Pink);
+            this.Brushes[Color.Yellow] = new SolidBrush(System.Drawing.Color.Yellow);
         }
 
         public void Invalidate(Graphics graphics, int fps)
