@@ -134,8 +134,16 @@ namespace Sharpness
 
     public class Canvas
     {
+        public class Shaking
+        {
+            public Vec2 ShakeDistance;
+            public double Time;
+        }
+
         private int fps;
         private Graphics graphics;
+        private static Shaking shaking = new Shaking() { ShakeDistance = new Vec2(0, 0), Time = 0 };
+
         public Vec2 DisplaySize { get; set; }
         private PrivateFontCollection fonts = new PrivateFontCollection();
         private readonly Dictionary<Color, SolidBrush> Brushes = new Dictionary<Color, SolidBrush>();
@@ -181,6 +189,12 @@ namespace Sharpness
         {
             currentColor.Pop();
             currentBrush = Brushes[currentColor.Peek()];
+        }
+
+        public static void Shake()
+        {
+            shaking.ShakeDistance = new Vec2(20, 20);
+            shaking.Time = 20;
         }
 
         public void DrawRectangle(Color color, Rect r)
@@ -236,6 +250,19 @@ namespace Sharpness
         public void Fill(Color color)
         {
             this.graphics.FillRectangle(Brushes[color], 0, 0, (float)DisplaySize.X, (float)DisplaySize.Y);
+        }
+
+        public void Predraw()
+        {
+            if (shaking.Time > 0)
+            {
+                Random r = new Random();
+                int sx = (int)((r.Next(2) == 0 ? 1 : -1) *  r.NextDouble() * shaking.ShakeDistance.X);
+                int sy = (int)((r.Next(2) == 0 ? 1 : -1) * r.NextDouble() * shaking.ShakeDistance.Y);
+                this.graphics.TranslateTransform(sx, sy);
+                shaking.Time--;
+                shaking.ShakeDistance *= 0.89;
+            }
         }
     }
 
@@ -314,6 +341,7 @@ namespace Sharpness
             canvas.Invalidate(e.Graphics, lastFPS);
             this.gameImpl.Update(input);
             input.Update();
+            canvas.Predraw();
             this.gameImpl.Draw(canvas);
         }
 
