@@ -57,6 +57,7 @@
       <DependentUpon>GameFinderDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Geometry.cs" />
+    <Compile Include="Randomize.cs" />
     <Compile Include="SharpnessWindow.cs" />
     <Compile Include="SharpnessWindow.Designer.cs">
       <DependentUpon>SharpnessWindow.cs</DependentUpon>
