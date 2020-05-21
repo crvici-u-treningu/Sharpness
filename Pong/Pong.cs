@@ -3,29 +3,32 @@ using Sharpness;
 
 namespace Pong
 {
+    interface IGameObject
+    {
+        void Config(ref Config config);
+        void Draw(Canvas canvas);
+        void Update(Input input);
+    }
+
+    
+
+    
     class Pong : Game
     {
-        double ballX, ballY;
+        
         bool drawingFPS = false;
-        double speedX, speedY;
-        Player player1, player2;
+        Ball b; 
+        Pad player1, player2;
+
 
         public override void Config(ref Config config)
         {
-            ballX = 70;
-            ballY = 100;
-            speedX = 5;
-            speedY = 5;
-            player1 = new Player();
-            player2 = new Player();
-            player1.Pad = new Rect(40, 240, 10, 120);
-            player2.Pad = new Rect(600, 240, 10, 120);
-            player1.Upkey = Keys.W;
-            player2.Upkey = Keys.Up;
-            player1.Downkey = Keys.S;
-            player2.Downkey = Keys.Down;
-            player1.Score = 0;
-            player2.Score = 0;
+            b = new Ball();
+            b.Config(ref config);
+            player1 = new Pad(Keys.W, Keys.S, new Vec2(40, 240));
+            player2 = new Pad(Keys.Up, Keys.Down, new Vec2(600, 240));
+
+
         }
 
         //ekran 640x480
@@ -37,15 +40,10 @@ namespace Pong
 
             canvas.DrawRectangle(Color.White, 315, 0, 10, 480);
 
-            canvas.DrawCircle(Color.Magenta, ballX, ballY, 10);
+            b.Draw(canvas);
 
-            canvas.DrawRectangle(Color.Green, player1.Pad);
-
-            canvas.DrawRectangle(Color.Yellow, player2.Pad);
-
-            canvas.DrawString(Color.White, 200, 100, $"{player1.Score}");
-
-            canvas.DrawString(Color.White, 440, 100, $"{player2.Score}");
+            player1.Draw(canvas);
+            player2.Draw(canvas);
 
 
             if (drawingFPS)
@@ -57,55 +55,30 @@ namespace Pong
             if (input.IsKeyDown(Keys.Escape)) Quit();
             if (input.IsKeyPressed(Keys.Tab)) drawingFPS = !drawingFPS;
 
-            if (input.IsKeyDown(Keys.Space))
-            {
-                ballX = 320;
-                ballY = 240;
-            }
+            b.Update(input);
 
-            ballX += speedX;
-            ballY += speedY;
+            //if ((ballX > 615) || (ballX <= 15))
+            //{
+            //    if (ballX > 615)
+            //        player1.Score++;
+            //    else player2.Score++;
+            //    Canvas.Shake();
+            //    ballX = 320;
+            //    ballY = 240;
+            //}
 
-            if ((ballY > 455) || (ballY <= 15))
-                speedY = -speedY;
+            //if ((ballX == 50) && (ballY > player1.Pad.Position.Y - 60 && ballY < player1.Pad.Position.Y + 60))
+            //    speedX = -speedX;
 
-            if ((ballX > 615) || (ballX <= 15))
-            {
-                if (ballX > 615)
-                    player1.Score++;
-                else player2.Score++;
-                Canvas.Shake();
-                ballX = 320;
-                ballY = 240;
-            }
+            //if((ballX == 590) && (ballY > player2.Pad.Position.Y - 60 && ballY < player2.Pad.Position.Y + 60))
+            //    speedX = -speedX;
 
-            if ((ballX == 50) && (ballY > player1.Pad.Position.Y - 60 && ballY < player1.Pad.Position.Y + 60))
-                speedX = -speedX;
-
-            if((ballX == 590) && (ballY > player2.Pad.Position.Y - 60 && ballY < player2.Pad.Position.Y + 60))
-                speedX = -speedX;
-
-            CheckPlayerKeys(input, player1);
-            CheckPlayerKeys(input, player2);
+            player1.Update(input);
+            player2.Update(input);
         }
 
-        public class Player
-        {
-            public Keys Upkey;
-            public Keys Downkey;
-            public Rect Pad;
-            public int Score;
-        }
-        void CheckPlayerKeys(Input input, Player p)
-        {
-            if (input.IsKeyDown(p.Upkey))
-            {
-                p.Pad.Position.Y -= 10;
-            }
-            else if (input.IsKeyDown(p.Downkey))
-            {
-                p.Pad.Position.Y += 10;
-            }
-        }
+       
+       
+        
     }
 }
