@@ -60,9 +60,13 @@ namespace Sharpness
 
     public static class Collision
     {
+        public static bool Between(Circle a, Vec2 p)
+        {
+            return Vec2.Distance(p, a.Position) <= a.Radius;
+        }
         public static bool Between(Circle a, Circle b)
         {
-            return Vec2.Distance(a.Position, b.Position) < Math.Max(a.Radius, b.Radius);
+            return Vec2.Distance(a.Position, b.Position) <= Math.Max(a.Radius, b.Radius);
         }
 
         public static bool Between(Circle c, Rect r)

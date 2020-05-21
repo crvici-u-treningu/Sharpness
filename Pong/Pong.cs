@@ -74,6 +74,7 @@ namespace Pong
                 if (ballX > 615)
                     player1.Score++;
                 else player2.Score++;
+                Canvas.Shake();
                 ballX = 320;
                 ballY = 240;
             }
