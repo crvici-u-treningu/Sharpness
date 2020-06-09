@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Bimian": {
+      "commandName": "Executable",
+      "executablePath": "C:\\Users\\Mika\\source\\repos\\Sharpness\\Bimian\\bin\\Debug\\netstandard2.0\\Sharpness.exe"
+    }
+  }
+}

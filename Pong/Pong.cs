@@ -3,12 +3,7 @@ using Sharpness;
 
 namespace Pong
 {
-    interface IGameObject
-    {
-        void Config(ref Config config);
-        void Draw(Canvas canvas);
-        void Update(Input input);
-    }
+
 
     
 

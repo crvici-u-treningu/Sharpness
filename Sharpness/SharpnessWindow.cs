@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.Drawing.Text;
 using System.Linq;
 using System.Text;
@@ -132,6 +134,46 @@ namespace Sharpness
         }
     }
 
+    public interface IGameObject
+    {
+        void Config(ref Config config);
+        void Draw(Canvas canvas);
+        void Update(Input input);
+    }
+
+    public class Sprite
+    {
+        public string Image;
+        public int X;
+        public int Y;
+        public int Width;
+        public int Height;
+    }
+
+    public class Library
+    {
+        public readonly static Dictionary<string, Image> Images = new Dictionary<string, Image>();
+        public static ImageAttributes imageAttribute = null;
+
+        public readonly static Dictionary<string, Sprite> Sprites = new Dictionary<string, Sprite>();
+
+        public static void LoadImage(string name, string path)
+        {
+            Images[name] = Image.FromFile(path);
+            if(imageAttribute == null)
+            {
+                imageAttribute = new ImageAttributes();
+                var c = System.Drawing.Color.FromArgb(255, 191, 220, 191);
+                imageAttribute.SetColorKey(c, c);
+            }
+        }
+
+        public static void CutSprite(string name, string image, int x, int y, int w, int h)
+        {
+            Sprites[name] = new Sprite() { Image = image, X = x, Y = y, Width = w, Height = h };
+        }
+    }
+
     public class Canvas
     {
         public class Shaking
@@ -198,12 +240,23 @@ namespace Sharpness
             shaking.Time = 20;
         }
 
+        public void DrawSprite(string spriteName, int x, int y)
+        {
+            this.graphics.InterpolationMode = InterpolationMode.NearestNeighbor;
+            var sprite = Library.Sprites[spriteName];
+            var image = Library.Images[sprite.Image];
+            var w = sprite.Width * 2f;
+            var h = sprite.Height * 2f;
+            var dest = new Rectangle((int) (x - w / 2), (int) (y - h / 2), (int) w, (int) h);
+            this.graphics.DrawImage(image, dest, sprite.X, sprite.Y, sprite.Width, sprite.Height, GraphicsUnit.Pixel, Library.imageAttribute);
+        }
+
         public void DrawRectangle(Color color, Rect r)
         {
             Vec2 half = r.Size / 2;
-            this.graphics.FillRectangle(Brushes[color], 
-                (float)(r.Position.X - half.X), 
-                (float)(r.Position.Y - half.Y), 
+            this.graphics.FillRectangle(Brushes[color],
+                (float)(r.Position.X - half.X),
+                (float)(r.Position.Y - half.Y),
                 (float)r.Size.X, (float)r.Size.Y);
         }
 
@@ -219,16 +272,16 @@ namespace Sharpness
 
         public void DrawCircle(Color color, int x, int y, int radius)
         {
-            this.graphics.FillEllipse(Brushes[color], 
-                x - radius, y - radius, 
+            this.graphics.FillEllipse(Brushes[color],
+                x - radius, y - radius,
                 radius * 2, radius * 2);
         }
 
         public void DrawCircle(Color color, Circle circle)
         {
-            this.graphics.FillEllipse(Brushes[color], 
-                (float)(circle.Position.X - circle.Radius), 
-                (float)(circle.Position.Y - circle.Radius), 
+            this.graphics.FillEllipse(Brushes[color],
+                (float)(circle.Position.X - circle.Radius),
+                (float)(circle.Position.Y - circle.Radius),
                 (float)circle.Radius * 2, (float)circle.Radius * 2);
         }
 
@@ -258,7 +311,7 @@ namespace Sharpness
             if (shaking.Time > 0)
             {
                 Random r = new Random();
-                int sx = (int)((r.Next(2) == 0 ? 1 : -1) *  r.NextDouble() * shaking.ShakeDistance.X);
+                int sx = (int)((r.Next(2) == 0 ? 1 : -1) * r.NextDouble() * shaking.ShakeDistance.X);
                 int sy = (int)((r.Next(2) == 0 ? 1 : -1) * r.NextDouble() * shaking.ShakeDistance.Y);
                 this.graphics.TranslateTransform(sx, sy);
                 shaking.Time--;
@@ -279,7 +332,7 @@ namespace Sharpness
         private readonly Config config = new Config();
 
         public SharpnessWindow()
-        { 
+        {
             InitializeComponent();
 
             this.gameImpl = GameFinder.GetImplementation();
@@ -299,7 +352,7 @@ namespace Sharpness
                 this.FormBorderStyle = FormBorderStyle.None;
                 this.Width = (int)this.config.DisplaySize.X;
                 this.Height = (int)this.config.DisplaySize.Y;
-                
+
                 this.canvas.DisplaySize = new Vec2(this.Width, this.Height);
 
                 this.Paint += SharpnessWindow_Paint;
