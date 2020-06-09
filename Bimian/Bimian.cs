@@ -5,6 +5,7 @@ namespace Bimian
 {
     public class Bimian : Game
     {
+        
         private void LoadImages()
         {
             Library.LoadImage("ships", "Images/Player.png");
@@ -39,6 +40,7 @@ namespace Bimian
             Library.CutSprite("rock4", "stones", 121, 4, 71, 76);
         }
 
+        
         private void DrawGalleryView(Canvas canvas)
         {
             canvas.DrawSprite("enemy1", 100, 50);
@@ -66,21 +68,32 @@ namespace Bimian
             canvas.DrawSprite("rock4", 500, 400);
         }
 
+        Friend f = new Friend();
+        Enemy e = new Enemy();
         public override void Config(ref Config config)
         {
             LoadImages();
+            f.Config(ref config);
+            e.Config(ref config);
+
         }
 
         public override void Draw(Canvas canvas)
         {
             canvas.Fill(Color.Black);
-            DrawGalleryView(canvas);
+            // DrawGalleryView(canvas);
+            // 
+            f.Draw(canvas);
+            e.Draw(canvas);
+
         }
 
         public override void Update(Input input)
         {
             if (input.IsKeyDown(Keys.Escape))
                 this.Quit();
+            f.Update(input);
+            e.Update(input);
         }
     }
 }
