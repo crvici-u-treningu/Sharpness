@@ -25,7 +25,7 @@ namespace Bimian
 
        
 
-        public new void Update(Input input)
+        public override void Update(Input input)
         {
             base.Update(input);
             y += speed;

@@ -93,6 +93,7 @@ namespace Bimian
         {
             if (input.IsKeyDown(Keys.Escape))
                 this.Quit();
+
             foreach (var x in ships)
                 x.Update(input);
         }

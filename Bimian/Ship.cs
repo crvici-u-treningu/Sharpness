@@ -10,7 +10,7 @@ namespace Bimian
         public int x, y;
         public int speed = 3;
         public string name;
-        public Circle collision = new Circle(0, 0, 5);
+        public Circle collision = new Circle(0, 0, 10);
 
         public abstract void Config(ref Config config);
 
@@ -23,7 +23,7 @@ namespace Bimian
 #endif
         }
 
-        public void Update(Input input)
+        public virtual void Update(Input input)
         {
             collision.Position.X = x;
             collision.Position.Y = y;

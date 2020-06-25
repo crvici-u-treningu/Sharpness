@@ -17,7 +17,7 @@ namespace Bimian
         }
 
 
-        public new void Update(Input input)
+        public override void Update(Input input)
         {
             base.Update(input);
             if (input.IsKeyDown(Keys.Left)) x -= speed;
