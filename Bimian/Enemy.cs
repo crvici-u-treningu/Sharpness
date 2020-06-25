@@ -5,34 +5,29 @@ using System.Text;
 
 namespace Bimian
 {
-    public class Enemy : IGameObject
+    public class Enemy : Ship
     {
-        int x, y;
-        int speed = 3;
+       
         int screeny;
         int screenx;
         float t;
         int pocx;
-        public void Config(ref Config config)
+        public override void Config(ref Config config)
         {
-            y = -500;
+            y = -500 + Randomize.Between(-100, 100);
             screeny = (int)config.DisplaySize.Y;
             screenx = (int)config.DisplaySize.X;
             pocx = Randomize.Between(30, screenx - 30);
-            t = 0;
+            t = Randomize.Between(-10,10);
+            name = "enemy2";
             
         }
 
-        public void Draw(Canvas canvas)
+       
+
+        public new void Update(Input input)
         {
-            canvas.DrawSprite("enemy2", x, y);
-
-
-
-        }
-
-        public void Update(Input input)
-        {
+            base.Update(input);
             y += speed;
             if (y > screeny + 30) 
             {

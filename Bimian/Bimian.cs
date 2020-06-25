@@ -1,5 +1,6 @@
 ﻿using Sharpness;
 using System;
+using System.Collections.Generic;
 
 namespace Bimian
 {
@@ -68,14 +69,15 @@ namespace Bimian
             canvas.DrawSprite("rock4", 500, 400);
         }
 
-        Friend f = new Friend();
-        Enemy e = new Enemy();
+        List<Ship> ships = new List<Ship>();
         public override void Config(ref Config config)
         {
             LoadImages();
-            f.Config(ref config);
-            e.Config(ref config);
-
+            ships.Add(new Friend());
+            for(int i = 0; i<10; i++)
+                ships.Add(new Enemy());
+            foreach (var x in ships)
+                x.Config(ref config);
         }
 
         public override void Draw(Canvas canvas)
@@ -83,17 +85,16 @@ namespace Bimian
             canvas.Fill(Color.Black);
             // DrawGalleryView(canvas);
             // 
-            f.Draw(canvas);
-            e.Draw(canvas);
-
+            foreach (var x in ships)
+                x.Draw(canvas);
         }
 
         public override void Update(Input input)
         {
             if (input.IsKeyDown(Keys.Escape))
                 this.Quit();
-            f.Update(input);
-            e.Update(input);
+            foreach (var x in ships)
+                x.Update(input);
         }
     }
 }
