@@ -14,7 +14,7 @@ namespace Bimian
 
         public abstract void Config(ref Config config);
 
-        public void Draw(Canvas canvas)
+        public virtual void Draw(Canvas canvas)
         {
             canvas.DrawSprite(name, x, y);
 #if DEBUG

@@ -70,10 +70,11 @@ namespace Bimian
         }
 
         List<Ship> ships = new List<Ship>();
+        Friend igrac = null;
         public override void Config(ref Config config)
         {
             LoadImages();
-            ships.Add(new Friend());
+            ships.Add(igrac = new Friend());
             for(int i = 0; i<10; i++)
                 ships.Add(new Enemy());
             foreach (var x in ships)
@@ -96,6 +97,17 @@ namespace Bimian
 
             foreach (var x in ships)
                 x.Update(input);
+
+            //proci kroz sve brodove
+            //koji su neprijatej
+            //ako se sudaraju sa igračem, igrač je mrtav
+            foreach (var x in ships)
+            {
+                if (x is Enemy)
+                {
+                    if (Collision.Between(x.collision, igrac.collision)) igrac.Dead = true;
+                }
+            }
         }
     }
 }
