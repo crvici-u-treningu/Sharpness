@@ -7,13 +7,14 @@ namespace Bimian
 {
     public class Friend : Ship
     {
-        
+        public bool Dead;
         public override void Config(ref Config config)
         {
             x = (int) config.DisplaySize.X / 2;
             y = (int)config.DisplaySize.Y * 5 / 6;
             speed = 6;
             name = "ship2";
+            Dead = false;
         }
 
 
@@ -31,6 +32,10 @@ namespace Bimian
 
 
 #endif
+        }
+        public override void Draw(Canvas canvas)
+        {
+            if (!Dead) base.Draw(canvas);
         }
     }
 }
