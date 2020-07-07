@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
@@ -156,10 +157,24 @@ namespace Sharpness
         public static ImageAttributes imageAttribute = null;
 
         public readonly static Dictionary<string, Sprite> Sprites = new Dictionary<string, Sprite>();
+        
+        public static void LoadAnimation(string name, string path, int frameCount)
+        {
+            AnimationDefinition.ByName[name] = new AnimationDefinition(name, path, frameCount);
+        }
 
         public static void LoadImage(string name, string path)
         {
-            Images[name] = Image.FromFile(path);
+            try
+            {
+                Images[name] = Image.FromFile(path);
+            }
+            catch(Exception e)
+            {
+                MessageBox.Show($"[Sharpness exception] {e.Message}");
+                Application.Exit();
+            }
+
             if(imageAttribute == null)
             {
                 imageAttribute = new ImageAttributes();
@@ -185,10 +200,11 @@ namespace Sharpness
         private int fps;
         private Graphics graphics;
         private static Shaking shaking = new Shaking() { ShakeDistance = new Vec2(0, 0), Time = 0 };
-
+        
         public Vec2 DisplaySize { get; set; }
         private PrivateFontCollection fonts = new PrivateFontCollection();
         private readonly Dictionary<Color, SolidBrush> Brushes = new Dictionary<Color, SolidBrush>();
+        private readonly List<RunningAnimation> AnimationsInProgress = new List<RunningAnimation>();
         private readonly Font font = new Font("Consolas", 16, FontStyle.Regular, GraphicsUnit.Pixel);
         private Stack<Color> currentColor = new Stack<Color>();
         private Brush currentBrush = null;
@@ -238,6 +254,11 @@ namespace Sharpness
         {
             shaking.ShakeDistance = new Vec2(20, 20);
             shaking.Time = 20;
+        }
+
+        public void EmitAnimation(string animationName, int x, int y, int frameCount = 1)
+        {
+            this.AnimationsInProgress.Add(new RunningAnimation(animationName, x, y, frameCount));
         }
 
         public void DrawSprite(string spriteName, int x, int y)
@@ -316,6 +337,17 @@ namespace Sharpness
                 this.graphics.TranslateTransform(sx, sy);
                 shaking.Time--;
                 shaking.ShakeDistance *= 0.89;
+            }
+
+            AnimationsInProgress.RemoveAll(x => !x.IsPlaying);
+        }
+
+        public void Postdraw()
+        {
+            foreach(var anim in AnimationsInProgress)
+            {
+                anim.Update(null);
+                anim.Draw(this);
             }
         }
     }
@@ -397,6 +429,7 @@ namespace Sharpness
             input.Update();
             canvas.Predraw();
             this.gameImpl.Draw(canvas);
+            canvas.Postdraw();
         }
 
         private void FrameTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)

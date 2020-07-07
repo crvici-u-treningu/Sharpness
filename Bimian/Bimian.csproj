@@ -18,6 +18,9 @@
     <None Update="Images\Collect.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Images\Explosion.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Images\Player.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

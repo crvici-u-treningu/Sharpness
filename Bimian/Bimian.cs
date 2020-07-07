@@ -9,6 +9,8 @@ namespace Bimian
         
         private void LoadImages()
         {
+            Library.LoadAnimation("explosion", "Images/Explosion.png", 11);
+
             Library.LoadImage("ships", "Images/Player.png");
             Library.CutSprite("ship1", "ships", 50, 56, 19, 27);
             Library.CutSprite("ship2", "ships", 50, 84, 19, 28);
@@ -80,6 +82,8 @@ namespace Bimian
                 x.Config(ref config);
         }
 
+        public bool shouldExplode = false;
+
         public override void Draw(Canvas canvas)
         {
             canvas.Fill(Color.Black);
@@ -87,12 +91,31 @@ namespace Bimian
             // 
             foreach (var x in ships)
                 x.Draw(canvas);
+
+#if DEBUG
+            // example use of animations:
+            if (shouldExplode)
+            {
+                foreach (var e in ships)
+                    if(e is Enemy)
+                    {
+                        canvas.EmitAnimation("explosion", e.x, e.y, Randomize.Between(2, 5));
+                    }
+
+                shouldExplode = false;
+            }
+#endif
         }
 
         public override void Update(Input input)
         {
             if (input.IsKeyDown(Keys.Escape))
                 this.Quit();
+
+#if DEBUG
+            if (input.IsKeyPressed(Keys.E))
+                shouldExplode = true;
+#endif
 
             foreach (var x in ships)
                 x.Update(input);
