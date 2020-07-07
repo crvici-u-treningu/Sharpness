@@ -92,20 +92,6 @@ namespace Bimian
             // 
             foreach (var x in ships)
                 x.Draw(canvas);
-
-#if DEBUG
-            // example use of animations:
-            if (shouldExplode)
-            {
-                foreach (var e in ships)
-                    if(e is Enemy)
-                    {
-                        canvas.EmitAnimation("explosion", e.x, e.y, Randomize.Between(2, 5));
-                    }
-
-                shouldExplode = false;
-            }
-#endif
         }
 
         public override void Update(Input input)
