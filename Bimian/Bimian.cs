@@ -112,9 +112,11 @@ namespace Bimian
             //ako se sudaraju sa igračem, igrač je mrtav
             foreach (var x in ships)
             {
-                if (x is Enemy)
+                if (x is Enemy && x.Dead == false)
                 {
                     if (Collision.Between(x.collision, igrac.collision)) igrac.Dead = true;
+                    foreach (var m in igrac.meci)
+                        if (Collision.Between(x.collision, m.collision)) x.Dead = true;
                 }
             }
         }

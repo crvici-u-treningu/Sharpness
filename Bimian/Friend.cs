@@ -7,8 +7,7 @@ namespace Bimian
 {
     public class Friend : Ship
     {
-        public bool Dead;
-        public bool FreshlyDead;
+        
 
         public override void Config(ref Config config)
         {
@@ -16,10 +15,10 @@ namespace Bimian
             y = (int)config.DisplaySize.Y * 5 / 6;
             speed = 6;
             name = "ship2";
-            Dead = false;
-            FreshlyDead = false;
+            
         }
 
+        public List<Metak> meci = new List<Metak>();
 
         public override void Update(Input input)
         {
@@ -32,20 +31,22 @@ namespace Bimian
 #if DEBUG
             if (input.IsKeyPressed(Keys.A)) speed--;
             else if (input.IsKeyPressed(Keys.D)) speed++;
-#endif
+#endif      
+            if (input.IsKeyPressed(Keys.Space))
+            {
+                meci.Add(new Metak(x, y));
+            }
+            foreach (var x in meci)
+                x.Update(input);
         }
 
         public override void Draw(Canvas canvas)
         {
-            if (!Dead) base.Draw(canvas);
-            else
-            {
-                if (!FreshlyDead)
-                {
-                    FreshlyDead = true;
-                    canvas.EmitAnimation("explosion", x, y, Randomize.Between(2, 5));
-                }
-            }
+            base.Draw(canvas);
+
+            foreach (var x in meci)
+                x.Draw(canvas);
+
         }
     }
 }
